@@ -9,22 +9,18 @@ game.StarterGui:SetCore("SendNotification", {
     Text = "by moonwalker.24";
     Duration = "5";
     Callback = NotificationBindable;
-local RunService = game:GetService("RunService")
+-- Example ESP script (esp.lua)
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
-local espEnabled = false
-
 -- Function to create a highlight for a character
 local function createHighlight(character)
-    if not character:FindFirstChildOfClass("Highlight") then
-        local highlight = Instance.new("Highlight")
-        highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Yellow color
-        highlight.FillTransparency = 0.5 -- Semi-transparent
-        highlight.OutlineTransparency = 1 -- No outline
-        highlight.Adornee = character
-        highlight.Parent = character
-    end
+    local highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Yellow color
+    highlight.FillTransparency = 0.5 -- Semi-transparent
+    highlight.OutlineTransparency = 1 -- No outline
+    highlight.Adornee = character
+    highlight.Parent = character
 end
 
 -- Function to remove existing highlights
@@ -41,41 +37,16 @@ end
 
 -- Function to update ESP
 local function updateESP()
-    if espEnabled then
-        for _, player in pairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer and player.Character then
-                createHighlight(player.Character)
-            end
+    removeHighlights()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            createHighlight(player.Character)
         end
-    else
-        removeHighlights()
     end
 end
 
--- Update ESP on character added
-Players.PlayerAdded:Connect(function(player)
-    player.CharacterAdded:Connect(function(character)
-        if espEnabled then
-            createHighlight(character)
-        end
-    end)
-end)
+-- Initial ESP update
+updateESP()
 
--- GUI Toggle integration
-local Toggle = Tab:CreateToggle({
-    Name = "ESP Toggle",
-    CurrentValue = false,
-    Flag = "Toggle1",
-    Callback = function(Value)
-        espEnabled = Value
-        updateESP()
-    end,
-})
-
--- Update ESP every frame if enabled
-RunService.RenderStepped:Connect(function()
-    if espEnabled then
-        updateESP()
-    end
-end)
-
+-- Update ESP every frame (optional if you want real-time updates)
+game:GetService("RunService").RenderStepped:Connect(updateESP)
