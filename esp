@@ -9,7 +9,7 @@ game.StarterGui:SetCore("SendNotification", {
     Text = "by moonwalker.24";
     Duration = "5";
     Callback = NotificationBindable;
--- Example ESP script (esp.lua)
+local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
@@ -45,8 +45,22 @@ local function updateESP()
     end
 end
 
+-- Update ESP on character added
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        createHighlight(character)
+    end)
+end)
+
+-- Update ESP on character removing
+Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        removeHighlights(player.Character)
+    end
+end)
+
 -- Initial ESP update
 updateESP()
 
--- Update ESP every frame (optional if you want real-time updates)
-game:GetService("RunService").RenderStepped:Connect(updateESP)
+-- Update ESP every frame
+RunService.RenderStepped:Connect(updateESP)
