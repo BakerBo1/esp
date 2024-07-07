@@ -5,10 +5,12 @@ local NotificationBindable = Instance.new("BindableFunction")
 NotificationBindable.OnInvoke = callback
  
 game.StarterGui:SetCore("SendNotification", {
-    Title = "Esp";
-    Text = "by moonwalker.24";
+    Title = "MoonWalker";
+    Text = "By @moonwalker.24";
     Duration = "5";
     Callback = NotificationBindable;
+})
+
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
