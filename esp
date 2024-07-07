@@ -9,7 +9,6 @@ game.StarterGui:SetCore("SendNotification", {
     Text = "by moonwalker.24";
     Duration = "5";
     Callback = NotificationBindable;
-})
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
@@ -18,12 +17,14 @@ local espEnabled = false
 
 -- Function to create a highlight for a character
 local function createHighlight(character)
-    local highlight = Instance.new("Highlight")
-    highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Yellow color
-    highlight.FillTransparency = 0.5 -- Semi-transparent
-    highlight.OutlineTransparency = 1 -- No outline
-    highlight.Adornee = character
-    highlight.Parent = character
+    if not character:FindFirstChildOfClass("Highlight") then
+        local highlight = Instance.new("Highlight")
+        highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Yellow color
+        highlight.FillTransparency = 0.5 -- Semi-transparent
+        highlight.OutlineTransparency = 1 -- No outline
+        highlight.Adornee = character
+        highlight.Parent = character
+    end
 end
 
 -- Function to remove existing highlights
@@ -43,9 +44,7 @@ local function updateESP()
     if espEnabled then
         for _, player in pairs(Players:GetPlayers()) do
             if player ~= LocalPlayer and player.Character then
-                if not player.Character:FindFirstChildOfClass("Highlight") then
-                    createHighlight(player.Character)
-                end
+                createHighlight(player.Character)
             end
         end
     else
@@ -79,3 +78,4 @@ RunService.RenderStepped:Connect(function()
         updateESP()
     end
 end)
+
