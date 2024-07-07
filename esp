@@ -1,0 +1,55 @@
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Function to create a highlight for a character
+local function createHighlight(character)
+    local highlight = Instance.new("Highlight")
+    highlight.FillColor = Color3.fromRGB(255, 255, 0) -- Yellow color
+    highlight.FillTransparency = 0.5 -- Semi-transparent
+    highlight.OutlineTransparency = 1 -- No outline
+    highlight.Adornee = character
+    highlight.Parent = character
+end
+
+-- Function to remove existing highlights
+local function removeHighlights()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            local highlight = player.Character:FindFirstChildOfClass("Highlight")
+            if highlight then
+                highlight:Destroy()
+            end
+        end
+    end
+end
+
+-- Function to update ESP
+local function updateESP()
+    removeHighlights()
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= LocalPlayer and player.Character then
+            createHighlight(player.Character)
+        end
+    end
+end
+
+-- Update ESP on character added
+Players.PlayerAdded:Connect(function(player)
+    player.CharacterAdded:Connect(function(character)
+        createHighlight(character)
+    end)
+end)
+
+-- Update ESP on character removing
+Players.PlayerRemoving:Connect(function(player)
+    if player.Character then
+        removeHighlights(player.Character)
+    end
+end)
+
+-- Initial ESP update
+updateESP()
+
+-- Update ESP every frame
+RunService.RenderStepped:Connect(updateESP)
