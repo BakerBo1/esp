@@ -1,6 +1,20 @@
+local function callback(Text)
+end
+ 
+local NotificationBindable = Instance.new("BindableFunction")
+NotificationBindable.OnInvoke = callback
+ 
+game.StarterGui:SetCore("SendNotification", {
+    Title = "Esp";
+    Text = "by moonwalker.24";
+    Duration = "5";
+    Callback = NotificationBindable;
+})
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+
+local espEnabled = false
 
 -- Function to create a highlight for a character
 local function createHighlight(character)
@@ -26,30 +40,42 @@ end
 
 -- Function to update ESP
 local function updateESP()
-    removeHighlights()
-    for _, player in pairs(Players:GetPlayers()) do
-        if player ~= LocalPlayer and player.Character then
-            createHighlight(player.Character)
+    if espEnabled then
+        for _, player in pairs(Players:GetPlayers()) do
+            if player ~= LocalPlayer and player.Character then
+                if not player.Character:FindFirstChildOfClass("Highlight") then
+                    createHighlight(player.Character)
+                end
+            end
         end
+    else
+        removeHighlights()
     end
 end
 
 -- Update ESP on character added
 Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(function(character)
-        createHighlight(character)
+        if espEnabled then
+            createHighlight(character)
+        end
     end)
 end)
 
--- Update ESP on character removing
-Players.PlayerRemoving:Connect(function(player)
-    if player.Character then
-        removeHighlights(player.Character)
+-- GUI Toggle integration
+local Toggle = Tab:CreateToggle({
+    Name = "ESP Toggle",
+    CurrentValue = false,
+    Flag = "Toggle1",
+    Callback = function(Value)
+        espEnabled = Value
+        updateESP()
+    end,
+})
+
+-- Update ESP every frame if enabled
+RunService.RenderStepped:Connect(function()
+    if espEnabled then
+        updateESP()
     end
 end)
-
--- Initial ESP update
-updateESP()
-
--- Update ESP every frame
-RunService.RenderStepped:Connect(updateESP)
